@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="search" type="application/opensearchdescription+xml" title="Folio" href="/opensearch.xml">
+<!-- favicon inlined as a data URI so it also rides along on the GitHub-Pages shares -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1a16'/%3E%3Cpath d='M9 6h10l5 5v15H9z' fill='none' stroke='%23ece5d4' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M19 6v5h5' fill='none' stroke='%234f8f83' stroke-width='1.8' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<title>Free blocs, a few metres tall, and where to rent a crashpad.</title>
+<style>
+/* ================= reset ================= */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+html, body { height: 100%; }
+img, svg, video, canvas { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* ================= tokens: bone, ink, verdigris (refined, technical-editorial) ========= */
+:root {
+  color-scheme: light;
+  --bg: #f1ede3;          /* bone paper */
+  --bg-2: #e8e2d3;
+  --fg: #1c1a16;          /* ink */
+  --muted: #5c574b;
+  --faint: #8d8779;
+  --accent: #3f7268;      /* verdigris */
+  --accent-2: #63988c;    /* patina */
+  --pollen: #af8a3e;      /* rare warm highlight */
+  --accent-fg: #f5f2e9;
+  --card: #f9f6ee;
+  --border: #dcd4c1;
+  --border-strong: #c3b9a0;
+  --code-bg: #eae3d2;
+  /* geometry: the SHELL is precise and quiet; generated pages choose their own radii */
+  --r0: 3px;
+  --r1: 7px;
+  --r2: 12px;
+  --leaf: var(--r2);      /* legacy aliases kept for saved pages */
+  --leaf-sm: var(--r1);
+  --blob: 50%;
+  --shadow: 2px 3px 0 rgba(28,26,22,.08);
+  --maxw: 720px;
+  --pad-x: clamp(16px, 4vw, 56px);
+  --sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #14130f;
+  --bg-2: #1b1a14;
+  --fg: #eae5d8;
+  --muted: #a49d8c;
+  --faint: #6e685a;
+  --accent: #6fb3a5;
+  --accent-2: #8fd0c2;
+  --pollen: #d3aa56;
+  --accent-fg: #14130f;
+  --card: #201e18;
+  --border: #302d24;
+  --border-strong: #454033;
+  --code-bg: #262319;
+  --shadow: 2px 3px 0 rgba(0,0,0,.45);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --bg: #14130f; --bg-2: #1b1a14; --fg: #eae5d8; --muted: #a49d8c; --faint: #6e685a;
+    --accent: #6fb3a5; --accent-2: #8fd0c2; --pollen: #d3aa56; --accent-fg: #14130f;
+    --card: #201e18; --border: #302d24; --border-strong: #454033; --code-bg: #262319;
+    --shadow: 2px 3px 0 rgba(0,0,0,.45);
+  }
+}
+
+/* ================= body: paper, washes, grain ================= */
+body {
+  font-family: var(--sans);
+  font-size: 15.5px;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body::after {  /* paper grain */
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: .05;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection { background: color-mix(in srgb, var(--accent-2) 40%, transparent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.ae-app { min-height: 100%; display: flex; flex-direction: column; }
+
+/* ================= topbar ================= */
+.ae-topbar {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px var(--pad-x);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.ae-state-loading .ae-topbar::after {  /* live shimmer while the page grows */
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+  background-size: 45% 100%; background-repeat: no-repeat;
+  animation: ae-sweep 1.6s ease-in-out infinite;
+}
+@keyframes ae-sweep { 0% { background-position: -50% 0; } 100% { background-position: 150% 0; } }
+.ae-brand {
+  display: inline-flex; align-items: center; gap: 7px; flex: none;
+  font-family: var(--serif); font-weight: 620; font-size: 21px; letter-spacing: -.01em;
+  color: var(--fg); text-decoration: none;
+}
+.ae-brand svg { width: 19px; height: 19px; color: var(--accent); }
+.ae-brand b { color: var(--accent); font-weight: 680; }
+.ae-qtext { flex: 1 1 auto; min-width: 0; color: var(--muted); font-size: 14px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ae-actions { display: flex; align-items: center; gap: 8px; flex: none; margin-left: auto; }
+.ae-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: var(--leaf-sm); font-size: 13px; font-weight: 550;
+  border: 1px solid var(--border-strong); background: var(--card);
+  color: var(--fg); text-decoration: none; cursor: pointer;
+  transition: border-color .15s, background .15s, transform .06s;
+}
+.ae-btn:hover { border-color: var(--accent); }
+.ae-btn:active { transform: translateY(1px); }
+.ae-btn:disabled { opacity: .45; cursor: default; }
+.ae-btn svg { width: 15px; height: 15px; }
+.ae-btn-ghost { border-color: transparent; background: transparent; color: var(--muted); }
+.ae-btn-ghost:hover { background: var(--bg-2); border-color: transparent; color: var(--fg); }
+.ae-btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.ae-iconbtn { width: 34px; height: 34px; padding: 0; justify-content: center; }
+
+/* ================= the sheet: Folio's title block ================= */
+.ae-sheet { border-bottom: 1px solid var(--border); background: var(--card); }
+.ae-sheetmeta { display: flex; flex-wrap: wrap; gap: 4px 26px; align-items: baseline;
+  padding: 6px var(--pad-x); border-top: 1px dashed var(--border);
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--faint); }
+.ae-sheetmeta span:first-child { color: var(--accent); font-weight: 600; }
+#ae-sheetstat { margin-left: auto; }
+.ae-thread {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 12px var(--pad-x);
+}
+.ae-tq {
+  display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
+  padding: 7px 14px; border-radius: var(--leaf-sm);
+  background: var(--bg-2); border: 1px solid var(--border);
+  color: var(--muted); font-size: 13.5px;
+}
+.ae-tq.first {
+  background: color-mix(in srgb, var(--accent) 13%, var(--card));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  color: var(--fg); font-weight: 550;
+}
+.ae-tq svg { width: 13px; height: 13px; color: var(--accent); flex: none; }
+.ae-tq span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ae-ask { position: relative; flex: 1 1 260px; min-width: 220px; display: flex; }
+.ae-ask input {
+  width: 100%; padding: 9px 44px 9px 15px; border-radius: var(--leaf-sm);
+  border: 1px solid var(--border); background: var(--card); font-size: 13.5px; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.ae-ask input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.ae-ask input { padding-right: 44px; }
+.ae-ask-go {
+  position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+  width: 30px; height: 30px; border: none; border-radius: var(--r1);
+  background: var(--accent); color: var(--accent-fg); cursor: pointer; display: grid; place-items: center;
+}
+.ae-ask-go svg { width: 14px; height: 14px; }
+/* point mode: a clearly-visible side tool for referencing parts of the page */
+.ae-pointfab { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 45;
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 13px;
+  border: 1px solid var(--border-strong); border-right: none; border-radius: var(--r2) 0 0 var(--r2);
+  background: var(--card); color: var(--fg); cursor: pointer; box-shadow: var(--shadow);
+  transition: background .15s, border-color .15s, transform .2s; }
+.ae-pointfab:hover { border-color: var(--accent); transform: translateY(-50%) translateX(-2px); }
+.ae-pointfab svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
+.ae-pointfab-t { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.25; text-align: left; }
+.ae-pointfab-t b { font-size: 13px; font-weight: 650; }
+.ae-pointfab-t i { font-style: normal; font-size: 11px; color: var(--faint); }
+.ae-pointfab.is-on { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.ae-pointfab.is-on svg, .ae-pointfab.is-on .ae-pointfab-t i { color: var(--accent-fg); }
+.ae-pointhint[hidden] { display: none; }
+.ae-pointhint { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); z-index: 45;
+  padding: 8px 16px; border-radius: 999px; background: var(--fg); color: var(--bg);
+  font-size: 12.5px; box-shadow: var(--shadow); animation: ae-rise .25s backwards; }
+body.ae-pointing #answer { cursor: crosshair; }
+body.ae-pointing #answer a { pointer-events: none; }
+.ae-hovered { outline: 2px dashed var(--accent) !important; outline-offset: 3px; }
+@media (max-width: 760px) { .ae-pointfab-t i { display: none; } }
+.ae-refchip[hidden] { display: none; }
+.ae-refchip { display: inline-flex; align-items: center; gap: 6px; max-width: 300px;
+  padding: 5px 8px 5px 10px; margin-right: 8px; border-radius: var(--r1);
+  background: color-mix(in srgb, var(--accent) 14%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  font-size: 12px; color: var(--fg); flex: none; }
+.ae-refchip svg { width: 12px; height: 12px; color: var(--accent); flex: none; }
+.ae-refchip .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ae-refchip .x { border: none; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; }
+.ae-refchip .x:hover { color: var(--fg); }
+
+/* ================= layout: column for words, canvas for websites ================= */
+.ae-main { flex: 1 0 auto; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 30px 20px 90px; }
+.ae-canvas { flex: 1 0 auto; width: 100%; padding: clamp(18px, 3vw, 40px) var(--pad-x) 90px; position: relative; }
+.ae-measure { max-width: 68ch; }
+
+/* ================= drafting registration marks (loading signature) ================= */
+.ae-regmarks { position: fixed; inset: 72px 14px 16px; z-index: 25; pointer-events: none;
+  opacity: .55; transition: opacity .6s ease; }
+.ae-regmarks.gone { opacity: 0; }
+.ae-regmarks::before, .ae-regmarks::after { content: ""; position: absolute; width: 22px; height: 22px; }
+.ae-regmarks::before { left: 0; top: 0;
+  border-left: 1.5px solid var(--accent); border-top: 1.5px solid var(--accent); }
+.ae-regmarks::after { right: 0; bottom: 0;
+  border-right: 1.5px solid var(--accent); border-bottom: 1.5px solid var(--accent); }
+.ae-regmarks span { display: none; }
+@media (max-width: 700px) { .ae-regmarks { display: none; } }
+
+/* ================= loading + status ================= */
+.ae-status { display: flex; align-items: center; gap: 11px; color: var(--muted); font-size: 14px; margin: 2px 0 16px; font-family: var(--mono); }
+.ae-status b { color: var(--fg); font-weight: 600; }
+.ae-orbit { position: relative; width: 22px; height: 22px; flex: none;
+  border: 1.5px solid var(--border-strong); border-radius: 50%; }
+.ae-orbit::before { content: ""; position: absolute; inset: 4px; border: 1px dashed var(--border); border-radius: 50%; }
+.ae-orbit::after { content: ""; position: absolute; left: 50%; top: -3px; width: 6px; height: 6px; margin-left: -3px;
+  border-radius: 50%; background: var(--accent); transform-origin: 3px 14px; animation: ae-orbitspin 1.4s linear infinite; }
+@keyframes ae-orbitspin { to { transform: rotate(360deg); } }
+.ae-orb { width: 26px; height: 26px; flex: none; border: 2px solid var(--border-strong);
+  border-top-color: var(--accent); border-radius: 50%; animation: ae-orbitspin 1s linear infinite; }
+.ae-orb-sm { width: 18px; height: 18px; }
+.ae-loading { padding-top: 18px; }
+.ae-loading-head { display: flex; align-items: center; gap: 15px; margin-bottom: 22px; }
+.ae-loading-title { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+.ae-loading-sub { color: var(--muted); font-size: 14px; margin-top: 1px; }
+.ae-loading-sub b { color: var(--fg); font-weight: 600; }
+.ae-progressbar { height: 4px; border-radius: 999px; background: var(--border); overflow: hidden; margin-bottom: 22px; }
+.ae-progressbar-fill { height: 100%; width: 0%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.ae-steps { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ae-step { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--muted); animation: ae-rise .35s backwards; }
+@keyframes ae-rise { from { opacity: 0; transform: translateY(6px); } }
+.ae-step .ae-dot { margin-top: 7px; width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--accent); }
+.ae-step.ae-step-done { color: var(--fg); }
+.ae-step.ae-step-done .ae-dot { background: var(--faint); }
+.ae-step .ae-sub { color: var(--faint); font-size: 12.5px; }
+.ae-loading-note { margin-top: 20px; color: var(--faint); font-size: 12.5px; }
+.ae-loading-note a { color: var(--muted); }
+
+/* ================= skeleton: a page taking shape ================= */
+.ae-skel-hero { margin: 6px 0 26px; }
+.ae-skel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+.ae-skel { border: 1px solid var(--border); border-radius: var(--leaf); background: var(--card); overflow: hidden; }
+.ae-skel-media { aspect-ratio: 4 / 3; }
+.ae-skel-line { height: 11px; border-radius: 6px; margin: 13px 15px; }
+.ae-skel-line.xl { height: 30px; max-width: 480px; margin: 0 0 12px; border-radius: 9px; }
+.ae-skel-line.w60 { max-width: 60%; margin: 0; }
+.ae-skel-line.short { width: 52%; }
+.ae-skel-media, .ae-skel-line { background: linear-gradient(100deg,
+  var(--bg-2) 28%, color-mix(in srgb, var(--card) 70%, var(--bg-2)) 50%, var(--bg-2) 72%);
+  background-size: 220% 100%; animation: ae-shimmer 1.5s linear infinite; }
+@keyframes ae-shimmer { to { background-position: -220% 0; } }
+
+/* ================= answer canvas defaults (the generated site refines from here) ===== */
+.ae-answer { font-size: 16.5px; }
+.ae-answer h1 { font-family: var(--serif); font-size: clamp(32px, 5.4vw, 52px); line-height: 1.05; letter-spacing: -.02em; font-weight: 560; margin: 0 0 14px; }
+.ae-answer h2 { font-family: var(--serif); font-size: clamp(22px, 3vw, 30px); line-height: 1.2; margin: 34px 0 12px; letter-spacing: -.012em; font-weight: 580; }
+.ae-answer h3 { font-size: 18px; margin: 24px 0 8px; font-weight: 650; }
+.ae-answer p { margin: 0 0 14px; }
+.ae-answer ul, .ae-answer ol { margin: 0 0 14px; padding-left: 22px; }
+.ae-answer li { margin: 4px 0; }
+.ae-answer li::marker { color: var(--accent); }
+.ae-answer a { color: var(--accent); text-underline-offset: 2px; text-decoration-thickness: 1px; }
+.ae-answer a:hover { color: color-mix(in srgb, var(--accent) 70%, var(--fg)); }
+.ae-answer strong { font-weight: 650; }
+.ae-answer blockquote { margin: 0 0 16px; padding: 4px 0 4px 16px; border-left: 3px solid var(--accent-2); color: var(--muted); }
+.ae-answer code { font-family: var(--mono); font-size: .87em; background: var(--code-bg); padding: 2px 6px; border-radius: 6px; }
+.ae-answer pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--leaf-sm); padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
+.ae-answer pre code { background: none; padding: 0; font-size: .85em; line-height: 1.55; }
+.ae-answer img { border-radius: var(--leaf-sm); }
+.ae-answer hr { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
+.ae-answer table { border-collapse: collapse; font-size: 14.5px; }
+.ae-answer th, .ae-answer td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.ae-answer th { font-weight: 640; color: var(--muted); font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+
+/* --- optional utilities the generator may use --- */
+.ae-lede { font-size: 18.5px; color: var(--muted); margin: 0 0 26px; max-width: 62ch; line-height: 1.55; }
+.ae-lede strong { color: var(--fg); font-weight: 600; }
+.ae-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--leaf); padding: 20px 22px; box-shadow: var(--shadow); margin: 0 0 20px; }
+.ae-band { background: var(--bg-2); border-block: 1px solid var(--border); padding: 26px var(--pad-x); margin: 26px calc(-1 * var(--pad-x)); }
+.ae-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 20px; }
+.ae-toolbar .ae-spacer { flex: 1 1 auto; }
+.ae-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--leaf-sm);
+  border: 1px solid var(--border-strong); background: var(--card); color: var(--muted); font-size: 13.5px;
+  cursor: pointer; user-select: none; transition: background .15s, border-color .15s, color .15s; }
+.ae-chip:hover { border-color: var(--accent); color: var(--fg); }
+.ae-chip.is-active { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.ae-toolbar select, .ae-toolbar input[type=search] { padding: 8px 13px; border-radius: var(--leaf-sm);
+  border: 1px solid var(--border-strong); background: var(--card); color: var(--fg); font-size: 13.5px; outline: none; }
+.ae-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 18px; margin: 0 0 28px; }
+.ae-pcard { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--leaf); overflow: hidden; box-shadow: var(--shadow); text-decoration: none; color: inherit;
+  transition: transform .18s, box-shadow .18s, border-color .18s; }
+.ae-pcard:hover { transform: translateY(-3px); border-color: var(--accent);
+  box-shadow: 0 8px 18px rgba(30,54,28,.12), 0 22px 48px rgba(30,54,28,.16); }
+.ae-pcard-media { aspect-ratio: 4 / 3; background: var(--bg-2); display: grid; place-items: center; overflow: hidden; }
+.ae-pcard-media img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; transition: transform .35s ease; }
+.ae-pcard:hover .ae-pcard-media img:not(.brand) { transform: scale(1.045); }
+.ae-pcard-media img.brand { width: 44px; height: 44px; object-fit: contain; opacity: .8; }
+.ae-pcard-body { padding: 14px 15px 16px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.ae-pcard-title { font-weight: 600; font-size: 15.5px; line-height: 1.3; }
+.ae-pcard-desc { font-size: 13.5px; color: var(--muted); line-height: 1.45; flex: 1; }
+.ae-pcard-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.ae-price { font-weight: 700; color: var(--accent); font-size: 15px; }
+.ae-pcard .host { font-size: 12px; color: var(--faint); }
+.ae-cta { display: inline-flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: var(--leaf-sm);
+  background: var(--accent); color: var(--accent-fg); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.ae-tag { display: inline-block; padding: 2px 9px; border-radius: 999px; background: var(--bg-2); color: var(--muted); font-size: 11.5px; font-weight: 500; }
+
+/* ---- SVG illustration slots: filled by illustrator sub-agents after the page ships ---- */
+[data-ae-svg] { position: relative; overflow: hidden; border: 1px dashed var(--border-strong);
+  border-radius: var(--r1); background: var(--bg-2); min-height: 90px; }
+[data-ae-svg]:not(.is-filled)::after { content: attr(data-ae-svg); position: absolute; inset: 0;
+  display: grid; place-items: center; padding: 12px; text-align: center;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .05em; color: var(--faint); }
+[data-ae-svg].is-filled { border: none; background: none; min-height: 0; }
+[data-ae-svg] svg { width: 100%; height: 100%; animation: ae-rise .4s backwards; }
+
+/* ================= sources ================= */
+.ae-sources { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); max-width: 760px; }
+.ae-sources h4 { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; font-weight: 600; }
+.ae-sources ol { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 9px; counter-reset: s; }
+.ae-source { display: flex; gap: 10px; align-items: baseline; font-size: 14px; }
+.ae-source::before { counter-increment: s; content: counter(s); flex: none; width: 20px; height: 20px;
+  display: grid; place-items: center; font-size: 11px; font-weight: 600; border-radius: var(--r0);
+  background: var(--bg-2); color: var(--muted); }
+.ae-source a { color: var(--fg); text-decoration: none; }
+.ae-source a:hover { color: var(--accent); }
+.ae-source .host { color: var(--faint); font-size: 12.5px; }
+
+/* ================= share bar ================= */
+.ae-sharebar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; justify-content: center; padding: 14px; animation: ae-rise .25s backwards; }
+.ae-sharebar-inner { display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 8px;
+  width: 100%; max-width: 620px; background: var(--card); border: 1px solid var(--border-strong);
+  border-radius: var(--leaf); padding: 10px 10px 10px 16px; box-shadow: var(--shadow); }
+.ae-sharebar-t { font-size: 13px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.ae-sharebar input { min-width: 0; border: none; background: transparent; font-size: 13px; color: var(--muted); outline: none; }
+.ae-sharebar-note { grid-column: 1 / -1; font-size: 11.5px; color: var(--faint); padding: 2px 6px 0; text-align: center; }
+@media (max-width: 560px) { .ae-sharebar-inner { grid-template-columns: 1fr auto auto; } .ae-sharebar-t { display: none; } }
+
+/* ================= error ================= */
+.ae-error { padding-top: 20px; }
+.ae-error h1 { font-family: var(--serif); font-size: 26px; margin-bottom: 10px; }
+.ae-error p { color: var(--muted); margin-bottom: 20px; }
+.ae-error-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ================= home: the garden gate ================= */
+.ae-home { flex: 1 0 auto; display: grid; place-items: center; padding: 48px var(--pad-x); }
+.ae-home-inner { width: 100%; max-width: 640px; text-align: center; }
+.ae-home .ae-mark { display: grid; place-items: center; margin-bottom: 14px; }
+.ae-home .ae-mark svg { width: 34px; height: 34px; color: var(--accent); }
+.ae-home .ae-wordmark { font-family: var(--serif); font-size: clamp(44px, 8vw, 64px); font-weight: 560; letter-spacing: -.025em; line-height: 1; margin-bottom: 10px; }
+.ae-home .ae-wordmark b { color: var(--accent); font-weight: 640; }
+.ae-home .ae-tagline { color: var(--muted); margin-bottom: 34px; font-size: 16px; }
+.ae-home form { position: relative; display: flex; }
+.ae-home form input { width: 100%; padding: 16px 54px 16px 22px; font-size: 16px; border-radius: var(--leaf);
+  background: var(--card); border: 1px solid var(--border-strong); outline: none; box-shadow: var(--shadow);
+  transition: border-color .15s, box-shadow .15s; }
+.ae-home form input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent), var(--shadow); }
+.ae-home .ae-go { position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; border: none; border-radius: var(--r1);
+  background: var(--accent); color: var(--accent-fg); cursor: pointer; display: grid; place-items: center; }
+.ae-home .ae-go svg { width: 17px; height: 17px; }
+.ae-home .ae-hints { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-top: 18px; }
+.ae-home .ae-hint { font-size: 12.5px; color: var(--faint); padding: 4px 11px; border-radius: 999px; border: 1px dashed var(--border-strong); }
+.ae-home .ae-hint code { font-family: var(--mono); color: var(--accent); background: none; }
+.ae-recent { margin-top: 52px; text-align: left; }
+.ae-recent h4 { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); font-weight: 600; margin-bottom: 12px; }
+.ae-recent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.ae-recent-card { display: block; padding: 13px 15px; border-radius: var(--leaf-sm); background: var(--card);
+  border: 1px solid var(--border); text-decoration: none; color: inherit; transition: border-color .15s, transform .15s; }
+.ae-recent-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.ae-recent-card .t { font-weight: 600; font-size: 13.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ae-recent-card .q { color: var(--faint); font-size: 12px; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ================= footer ================= */
+.ae-footer { flex: none; text-align: center; padding: 20px; color: var(--faint); font-size: 12.5px; border-top: 1px solid var(--border); }
+.ae-footer b { color: var(--accent); font-weight: 600; }
+
+@media (max-width: 640px) { .ae-brand span.full { display: none; } .ae-actions .label { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="ae-app ae-state-result">
+<header class="ae-topbar">
+  <a class="ae-brand" href="https://marcusbandit.github.io/answer-lan/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/></svg><span class="full">Folio</span></a>
+  <div class="ae-qtext">bouldering close to lyon.</div>
+  <div class="ae-actions"><button class="ae-btn ae-iconbtn" onclick="aeToggleTheme()" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg></button></div>
+</header>
+<main class="ae-canvas">
+  <article id="answer" class="ae-answer">The user wants outdoor bouldering (not roped routes), low boulders, plus crashpad/fallmat rental. I'll refocus the hero copy, add a crashpad rental note, adjust the quickstats, and add a dedicated crashpad rental section. I'll keep everything else identical, but rework the outdoor crag entries to emphasize bouldering and add pad-rental info where relevant, and add a rental band.
+
+<!-- concept: a topographic "trailhead" guide splitting outdoor crags (with drive times from Lyon) from indoor gyms, filterable, ruled and technical like a climbing topo -->
+<style>
+#answer{
+  --ink:var(--fg); --stone:var(--accent);
+  font-family:var(--sans);
+  color:var(--fg);
+  line-height:1.5;
+}
+#answer *{box-sizing:border-box}
+#answer .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+#answer .hero{
+  position:relative;
+  border-bottom:2px solid var(--border-strong);
+  padding:52px 0 40px;
+  overflow:hidden;
+}
+#answer .hero .wrap{display:grid;grid-template-columns:1.3fr .9fr;gap:40px;align-items:center}
+#answer .kicker{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);display:flex;gap:10px;align-items:center;margin-bottom:18px;
+}
+#answer .kicker::before{content:"";width:34px;height:1px;background:var(--accent)}
+#answer h1{
+  font-family:var(--serif);font-weight:600;font-size:clamp(2.3rem,5vw,3.6rem);
+  line-height:1.02;margin:0 0 18px;letter-spacing:-.01em;
+}
+#answer h1 em{font-style:italic;color:var(--accent)}
+#answer .lede{font-size:1.06rem;color:var(--muted);max-width:52ch}
+#answer .lede a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
+#answer .heroart{
+  border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;
+  aspect-ratio:4/3;background:var(--card);
+}
+#answer .heroart img{width:100%;height:100%;object-fit:cover;display:block}
+
+#answer .quickstats{
+  display:flex;gap:0;margin-top:34px;border-top:1px solid var(--border);
+}
+#answer .quickstats .qs{
+  flex:1;padding:16px 20px 0;border-right:1px solid var(--border);
+}
+#answer .quickstats .qs:last-child{border-right:0}
+#answer .qs b{font-family:var(--serif);font-size:1.7rem;display:block;line-height:1}
+#answer .qs span{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+#answer .band{padding:56px 0}
+#answer .band-h{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:28px;border-bottom:2px solid var(--ink);padding-bottom:12px;flex-wrap:wrap}
+#answer .band-h h2{font-family:var(--serif);font-size:1.9rem;margin:0;font-weight:600}
+#answer .band-h .note{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.08em}
+
+/* filter toolbar */
+#answer .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+#answer .fbtn{
+  font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:8px 15px;border:1px solid var(--border-strong);background:transparent;color:var(--fg);
+  cursor:pointer;border-radius:2px;transition:.15s;
+}
+#answer .fbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* crag list = topo entries */
+#answer .crags{display:flex;flex-direction:column;gap:0}
+#answer .crag{
+  display:grid;grid-template-columns:70px 1fr auto;gap:22px;align-items:center;
+  padding:22px 0;border-bottom:1px solid var(--border);
+}
+#answer .crag .num{
+  font-family:var(--serif);font-size:2rem;color:var(--faint);line-height:1;
+  border-right:1px solid var(--border);padding-right:22px;height:100%;display:flex;align-items:center;
+}
+#answer .crag h3{font-family:var(--serif);font-size:1.35rem;margin:0 0 4px;font-weight:600}
+#answer .crag h3 a{color:inherit;text-decoration:none}
+#answer .crag h3 a:hover{text-decoration:underline;text-decoration-color:var(--accent)}
+#answer .crag p{margin:0;color:var(--muted);font-size:.94rem;max-width:60ch}
+#answer .crag .meta{text-align:right;white-space:nowrap}
+#answer .drive{
+  font-family:var(--mono);font-size:1.15rem;font-weight:600;display:flex;align-items:center;gap:8px;justify-content:flex-end;
+}
+#answer .drive svg{width:16px;height:16px;color:var(--accent)}
+#answer .tags{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;flex-wrap:wrap}
+#answer .t{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border);color:var(--muted);border-radius:2px}
+#answer .t.pt{color:var(--accent);border-color:var(--accent)}
+
+/* gyms grid */
+#answer .gyms{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+#answer .gym{
+  border:1px solid var(--border);border-radius:var(--r1);overflow:hidden;background:var(--card);
+  display:flex;flex-direction:column;transition:.15s;
+}
+#answer .gym:hover{border-color:var(--accent);transform:translateY(-2px)}
+#answer .gym .ph{aspect-ratio:16/10;background:var(--bg-2);overflow:hidden;display:flex;align-items:center;justify-content:center}
+#answer .gym .ph img{width:100%;height:100%;object-fit:cover}
+#answer .gym .ph img.mark{width:40%;height:auto;object-fit:contain;opacity:.7}
+#answer .gym .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+#answer .gym h3{font-family:var(--serif);font-size:1.2rem;margin:0;font-weight:600}
+#answer .gym h3 a{color:inherit;text-decoration:none}
+#answer .gym h3 a:hover{text-decoration:underline;text-decoration-color:var(--accent)}
+#answer .gym p{margin:0;color:var(--muted);font-size:.88rem;flex:1}
+#answer .gym .go{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;color:var(--accent);text-transform:uppercase;text-decoration:none}
+
+/* pad rental rows */
+#answer .pads{display:flex;flex-direction:column;gap:0}
+#answer .pad{
+  display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;
+  padding:20px 0;border-bottom:1px solid var(--border);
+}
+#answer .pad h3{font-family:var(--serif);font-size:1.25rem;margin:0 0 4px;font-weight:600}
+#answer .pad h3 a{color:inherit;text-decoration:none}
+#answer .pad h3 a:hover{text-decoration:underline;text-decoration-color:var(--accent)}
+#answer .pad p{margin:0;color:var(--muted);font-size:.94rem;max-width:64ch}
+#answer .pad .price{font-family:var(--mono);font-size:1.15rem;font-weight:600;text-align:right;white-space:nowrap}
+#answer .pad .price small{display:block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:400;margin-top:4px}
+
+#answer .split{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+#answer .split > div{padding:32px 30px}
+#answer .split > div:first-child{border-right:1px solid var(--border)}
+#answer .split h4{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+#answer .split ul{margin:0;padding-left:18px;color:var(--muted);font-size:.94rem}
+#answer .split li{margin-bottom:9px}
+#answer .split a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
+
+#answer .foot{border-top:2px solid var(--border-strong);padding:34px 0 60px}
+#answer .foot .wrap{display:flex;flex-wrap:wrap;gap:10px}
+#answer .src{font-family:var(--mono);font-size:.74rem;color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--border);border-radius:2px}
+#answer .src:hover{border-color:var(--accent);color:var(--fg)}
+
+@media(max-width:820px){
+  #answer .hero .wrap{grid-template-columns:1fr}
+  #answer .heroart{order:-1}
+  #answer .quickstats{flex-wrap:wrap}
+  #answer .quickstats .qs{flex:1 1 40%}
+  #answer .crag{grid-template-columns:1fr;gap:8px}
+  #answer .crag .num{display:none}
+  #answer .crag .meta{text-align:left}
+  #answer .drive,#answer .tags{justify-content:flex-start}
+  #answer .pad{grid-template-columns:1fr;gap:8px}
+  #answer .pad .price{text-align:left}
+  #answer .split{grid-template-columns:1fr}
+  #answer .split > div:first-child{border-right:0;border-bottom:1px solid var(--border)}
+}
+</style>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="kicker">Topo / Outdoor bouldering near Lyon</div>
+      <h1>Free blocs, a few metres tall, and where to <em>rent a crashpad</em>.</h1>
+      <p class="lede">No ropes, no belayer: just short natural boulders you can climb ground-up, with a fall mat under you. Lyon has real granite and limestone blocs in the <a href="https://www.thecrag.com/en/climbing/france/alps/area/1470127155" target="_blank" rel="noreferrer">Monts d'Or</a> on its doorstep, and the Alpine forests an hour out. Below: the free bouldering spots, then who rents pads.</p>
+      <div class="quickstats">
+        <div class="qs"><b>Free</b><span>Access to the rock</span></div>
+        <div class="qs"><b>2-5 m</b><span>Typical bloc height</span></div>
+        <div class="qs"><b>~15&euro;</b><span>Crashpad / day</span></div>
+        <div class="qs"><b>35 min</b><span>Nearest blocs</span></div>
+      </div>
+    </div>
+    <figure class="heroart">
+      <img src="https://www.equilibrevertical.fr/pictures/events/rockclimbing-near-lyon-abseil-rappel.jpg_356.jpg" alt="Bouldering near Lyon" loading="lazy">
+    </figure>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="band-h">
+      <h2>Free outdoor boulders</h2>
+      <span class="note">no ropes, no fee, just a pad</span>
+    </div>
+
+    <div class="filters" id="cragFilter">
+      <button class="fbtn" data-f="all" aria-pressed="true">All</button>
+      <button class="fbtn" data-f="transit" aria-pressed="false">Public transport</button>
+      <button class="fbtn" data-f="beginner" aria-pressed="false">Beginner-friendly</button>
+    </div>
+
+    <div class="crags">
+      <div class="crag" data-tags="transit beginner">
+        <div class="num">01</div>
+        <div>
+          <h3><a href="https://www.thecrag.com/en/climbing/france/alps/area/1470127155" target="_blank" rel="noreferrer">Monts d'Or blocs</a></h3>
+          <p>The classic Lyon home crags: short limestone walls and free-standing boulders scattered across the hills right on the city's doorstep, most just a few metres tall. Free to climb, well documented in the FFME du Rhône guidebook and on <a href="https://www.thecrag.com/en/climbing/france/alps/area/1470127155" target="_blank" rel="noreferrer">theCrag</a>.</p>
+        </div>
+        <div class="meta">
+          <div class="drive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>35 min</div>
+          <div class="tags"><span class="t pt">Train + bus</span><span class="t">Boulders</span></div>
+        </div>
+      </div>
+
+      <div class="crag" data-tags="">
+        <div class="num">02</div>
+        <div>
+          <h3><a href="https://thetopo.com/areas/416" target="_blank" rel="noreferrer">Wider Lyon blocs (27crags / The Topo)</a></h3>
+          <p>Community topos covering all the documented bouldering around Lyon: lesser-known blocs, boulder heights and landing notes you can browse and add to. The best way to hunt down low, free problems once you have ticked the obvious spots.</p>
+        </div>
+        <div class="meta">
+          <div class="drive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>varies</div>
+          <div class="tags"><span class="t">Bouldering</span><span class="t">Community topos</span></div>
+        </div>
+      </div>
+
+      <div class="crag" data-tags="beginner">
+        <div class="num">03</div>
+        <div>
+          <h3><a href="https://www.equilibrevertical.fr/activites/escalade-falaise/rock-climbing-near-lyon.htm" target="_blank" rel="noreferrer">Curis-au-Mont-d'Or</a></h3>
+          <p>Limestone in the Monts d'Or just north of the city, reachable by public transport. Mostly a roped crag, but the sector has plenty of low sections and boulders to work ground-up when you keep it short. A good no-car half-day if you bring your own pad.</p>
+        </div>
+        <div class="meta">
+          <div class="drive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>30 min</div>
+          <div class="tags"><span class="t pt">Transport</span><span class="t">Low sections</span></div>
+        </div>
+      </div>
+
+      <div class="crag" data-tags="">
+        <div class="num">04</div>
+        <div>
+          <h3><a href="https://lyonsecret.com/en/sports-activities-thrills-lyon-surroundings/" target="_blank" rel="noreferrer">Alpine forest blocs (foothills)</a></h3>
+          <p>An hour towards the Alps, the forests open up to granite and sandstone boulder fields with proper landings. Bigger day out, but the reward is quiet, low-to-mid-height blocs. Lyon Secret rounds up the outdoor options in the wider region.</p>
+        </div>
+        <div class="meta">
+          <div class="drive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>45-60 min</div>
+          <div class="tags"><span class="t">Granite blocs</span><span class="t">Forest</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var box=document.getElementById('cragFilter');
+  if(!box)return;
+  var crags=Array.prototype.slice.call(document.querySelectorAll('#answer .crag'));
+  box.addEventListener('click',function(e){
+    var b=e.target.closest('.fbtn');if(!b)return;
+    box.querySelectorAll('.fbtn').forEach(function(x){x.setAttribute('aria-pressed',x===b);});
+    var f=b.getAttribute('data-f');
+    crags.forEach(function(c){
+      var t=c.getAttribute('data-tags')||'';
+      c.style.display=(f==='all'||t.indexOf(f)>-1)?'':'none';
+    });
+  });
+})();
+</script>
+
+<section class="band" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="wrap">
+    <div class="band-h">
+      <h2>Renting a crashpad in Lyon</h2>
+      <span class="note">bouldering-specific fall mats</span>
+    </div>
+    <p class="lede" style="margin-bottom:24px">Crashpad rental is niche in France, so plan ahead. The most reliable routes are outdoor-gear shops with a rental counter (a common weekend option is a foldable pad for roughly 12-18&euro;/day), or peer-to-peer gear rental. Call ahead to confirm stock before you drive out.</p>
+    <div class="pads">
+
+      <div class="pad">
+        <div>
+          <h3><a href="https://www.decathlon.fr/browse/c0-sports/c1-escalade/_/N-1jbcqvj" target="_blank" rel="noreferrer">Decathlon Location (multiple Lyon stores)</a></h3>
+          <p>Decathlon's rental service (<em>Decathlon Location / Rent</em>) covers a growing catalogue of outdoor gear, and Simond crashpads appear at selected larger stores. Check the Lyon-area shops (Confluence, Part-Dieu, Vaise) online before you go, or buy an entry Simond pad outright from around 100&euro; if you will boulder often.</p>
+        </div>
+        <div class="price">~15&euro;<small>per day, if stocked</small></div>
+      </div>
+
+      <div class="pad">
+        <div>
+          <h3><a href="https://www.expemag.com/" target="_blank" rel="noreferrer">Expe / local mountain shops</a></h3>
+          <p>Specialist climbing and mountain shops around Lyon (Expe, Snowleader pickup points, independent grimpe stores) are the surest bet for a real bouldering pad and beta on where to use it. A phone call to ask "vous louez des crashpads?" saves a wasted trip.</p>
+        </div>
+        <div class="price">Ask<small>call to confirm</small></div>
+      </div>
+
+      <div class="pad">
+        <div>
+          <h3><a href="https://en.rentle.io/" target="_blank" rel="noreferrer">Peer-to-peer gear rental</a></h3>
+          <p>Sites and apps for renting sports gear from locals (Rentle, AlloVoisins, Le Bon Coin listings) regularly turn up crashpads in the Lyon area, usually cheaper than a shop and often collectable the same day. Search "crashpad Lyon" or "matelas escalade".</p>
+        </div>
+        <div class="price">~10&euro;<small>per day, local</small></div>
+      </div>
+
+      <div class="pad">
+        <div>
+          <h3><a href="https://www.equilibrevertical.fr/activites/escalade-falaise/rock-climbing-near-lyon.htm" target="_blank" rel="noreferrer">Guided outing with gear included</a></h3>
+          <p>If sourcing a pad is too much hassle, a guided bouldering half-day through <a href="https://www.equilibrevertical.fr/activites/escalade-falaise/rock-climbing-near-lyon.htm" target="_blank" rel="noreferrer">Equilibre Vertical</a> brings the pads (and spotting) for you, and takes you straight to the good low blocs.</p>
+        </div>
+        <div class="price">Incl.<small>pads provided</small></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <h4>Bouldering safe outdoors</h4>
+        <ul>
+          <li>Bring at least one pad, ideally two, and a spotter: even a 3 m fall onto rock hurts without a mat under you.</li>
+          <li>Grab the regional topo <a href="https://www.thecrag.com/en/climbing/france/alps/area/1470127155" target="_blank" rel="noreferrer"><em>Escalade autour de Lyon</em></a> (FFME du Rhône, 2018, 20&euro;) for boulder heights, landings and approaches.</li>
+          <li>Limestone dries slowly: after rain, the blocs stay greasy for a day or two, so check the forecast.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>No pad, no car?</h4>
+        <ul>
+          <li><a href="https://www.equilibrevertical.fr/activites/escalade-falaise/rock-climbing-near-lyon.htm" target="_blank" rel="noreferrer">Equilibre Vertical</a> runs guided outings with pads included, adapting the blocs to your level.</li>
+          <li>For a wet-weather backup, indoor bouldering halls in town (Climb Up and others) rent shoes and need no pad of your own.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="src" href="https://thisislyon.fr/things-to-do/sports-lyon/climbing-in-lyon/" target="_blank" rel="noreferrer">thisislyon.fr</a>
+    <a class="src" href="https://www.thecrag.com/en/climbing/france/alps/area/1470127155" target="_blank" rel="noreferrer">theCrag</a>
+    <a class="src" href="https://thetopo.com/areas/416" target="_blank" rel="noreferrer">The Topo / 27crags</a>
+    <a class="src" href="https://www.equilibrevertical.fr/activites/escalade-falaise/rock-climbing-near-lyon.htm" target="_blank" rel="noreferrer">Equilibre Vertical</a>
+    <a class="src" href="https://www.decathlon.fr/browse/c0-sports/c1-escalade/_/N-1jbcqvj" target="_blank" rel="noreferrer">Decathlon</a>
+    <a class="src" href="https://lyonsecret.com/en/sports-activities-thrills-lyon-surroundings/" target="_blank" rel="noreferrer">Lyon Secret</a>
+  </div>
+</footer></article>
+  <div class="ae-sources"><h4>Sources</h4><ol><li class="ae-source"><a href="https://www.thecrag.com/en/climbing/france/alps/area/1470127155" target="_blank" rel="noreferrer">Lyon Area, Rock climbing | theCrag</a> <span class="host">thecrag.com</span></li><li class="ae-source"><a href="https://thisislyon.fr/things-to-do/sports-lyon/climbing-in-lyon/" target="_blank" rel="noreferrer">Climbing in Lyon: Best Climbing Facilities in the French Alps - Thisislyon.fr</a> <span class="host">thisislyon.fr</span></li><li class="ae-source"><a href="https://thetopo.com/areas/416" target="_blank" rel="noreferrer">Lyon rock climbing and bouldering - The Topo</a> <span class="host">thetopo.com</span></li><li class="ae-source"><a href="https://lyonsecret.com/en/sports-activities-thrills-lyon-surroundings/" target="_blank" rel="noreferrer">MMA, rock climbing, bungee jumping or mega zip lines&amp;#8230; where can you experience the biggest adrenalin rushes in Lyon?</a> <span class="host">lyonsecret.com</span></li><li class="ae-source"><a href="https://www.equilibrevertical.fr/activites/escalade-falaise/rock-climbing-near-lyon.htm" target="_blank" rel="noreferrer">Rock Climbing near Lyon - Equilibre Vertical</a> <span class="host">equilibrevertical.fr</span></li></ol></div>
+</main>
+<footer class="ae-footer">shared from <b>Folio</b> &middot; a page, not a list of links</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem("ae-theme"); } catch (e) {}
+  // ?theme=light|dark overrides (handy for links and headless screenshots)
+  var m = location.search.match(/[?&]theme=(light|dark)\b/);
+  if (m) saved = m[1];
+  if (saved) root.setAttribute("data-theme", saved);
+  window.aeToggleTheme = function () {
+    var cur = root.getAttribute("data-theme") || "auto";
+    var dark = cur === "dark" || (cur === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("ae-theme", next); } catch (e) {}
+  };
+})();
+</script>
+</body>
+</html>
